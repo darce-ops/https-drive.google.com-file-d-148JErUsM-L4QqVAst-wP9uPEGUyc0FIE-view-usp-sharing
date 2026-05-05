@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Dashboard — Abril 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --mag:      #D4006E;
+  --magB:     #FF1A8C;
+  --mag-glow: rgba(212,0,110,0.35);
+  --mag-dim:  rgba(212,0,110,0.10);
+  --gold:     #F5B942;
+  --bg:       #0C0C10;
+  --s1:       #13131A;
+  --s2:       #1C1C26;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.11);
+  --txt:      #F0EEF5;
+  --sub:      #8885A0;
+  --dim:      #4A4860;
+  --fd: 'DM Serif Display', Georgia, serif;
+  --fb: 'DM Sans', system-ui, sans-serif;
+  --fm: 'Space Mono', monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--fb);
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 55% at 5%  0%,   rgba(212,0,110,.20) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 38% at 95% 100%,  rgba(212,0,110,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 50%,   rgba(15,10,30,.6)  0%,transparent 80%);
+}
+.wrap{position:relative;z-index:1;max-width:1360px;margin:0 auto;padding:0 28px 72px;}
+
+/* HEADER */
+header{
+  padding:56px 0 40px;
+  display:grid;grid-template-columns:1fr auto;align-items:end;
+  border-bottom:1px solid var(--border2);margin-bottom:38px;
+  animation:fD .8s ease both;
+}
+.eyebrow{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--fm);font-size:.7rem;letter-spacing:.16em;
+  color:var(--mag);text-transform:uppercase;margin-bottom:14px;
+}
+.eyebrow::before{content:'';width:30px;height:1px;background:var(--mag);display:block;}
+header h1{
+  font-family:var(--fd);font-size:clamp(2.4rem,4vw,3.8rem);
+  font-weight:400;line-height:1.06;letter-spacing:-.025em;
+}
+header h1 em{
+  font-style:italic;
+  background:linear-gradient(95deg,var(--mag),var(--magB) 60%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hright{text-align:right;}
+.hperiod{
+  font-family:var(--fm);font-size:.7rem;color:var(--sub);
+  letter-spacing:.1em;line-height:2;text-transform:uppercase;
+}
+.hlive{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--fm);font-size:.68rem;color:var(--gold);margin-top:10px;
+}
+.hlive::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 10px var(--gold);
+  animation:pd 2s infinite;
+}
+
+/* FILTERS */
+.frow{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:34px;animation:fD .8s .1s ease both;
+}
+.flabel{font-family:var(--fm);font-size:.66rem;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;margin-right:4px;}
+.chip{
+  padding:6px 17px;border-radius:100px;
+  border:1px solid var(--border2);background:transparent;
+  color:var(--sub);font-size:.75rem;font-weight:600;font-family:var(--fb);
+  cursor:pointer;transition:all .22s;letter-spacing:.02em;
+}
+.chip:hover{border-color:var(--mag);color:var(--mag);}
+.chip.on{background:var(--mag);color:#fff;border-color:var(--mag);box-shadow:0 0 22px var(--mag-glow);}
+
+/* KPI STRIP */
+.kstrip{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+  margin-bottom:22px;animation:fU .7s .15s ease both;
+}
+.kpi{
+  position:relative;overflow:hidden;
+  background:var(--s1);border:1px solid var(--border);border-radius:18px;
+  padding:26px 22px 22px;cursor:default;
+  transition:transform .22s,border-color .22s,box-shadow .22s;
+}
+.kpi::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--mag),var(--magB));
+  opacity:0;transition:opacity .22s;
+}
+.kpi:hover{transform:translateY(-4px);border-color:var(--mag);box-shadow:0 12px 40px var(--mag-glow);}
+.kpi:hover::after{opacity:1;}
+.kpi-ico{font-size:1.35rem;margin-bottom:14px;display:block;filter:drop-shadow(0 0 8px var(--mag-glow));}
+.kpi-num{
+  font-family:var(--fd);font-size:2.7rem;line-height:1;
+  color:var(--magB);letter-spacing:-.02em;
+}
+.kpi-lbl{margin-top:8px;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.kpi-sub{margin-top:4px;font-size:.73rem;color:var(--sub);}
+
+/* SECTION LABEL */
+.slabel{
+  font-family:var(--fm);font-size:.67rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* GRID */
+.g{display:grid;gap:14px;margin-bottom:14px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1.55fr 1fr 1fr;}
+.g1{grid-template-columns:1fr;}
+
+/* CARD */
+.card{
+  background:var(--s1);border:1px solid var(--border);border-radius:20px;
+  padding:28px 26px;transition:border-color .22s;
+}
+.card:hover{border-color:rgba(212,0,110,.22);}
+.chead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.ctitle{
+  font-family:var(--fd);font-size:1.15rem;font-weight:400;
+  letter-spacing:-.01em;color:var(--txt);line-height:1.2;
+}
+.cbadge{
+  font-family:var(--fm);font-size:.63rem;color:var(--mag);
+  border:1px solid var(--mag);border-radius:4px;padding:3px 8px;
+  letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;margin-left:10px;
+}
+
+/* CHART */
+.ch{position:relative;}
+.ch220{height:220px;}.ch260{height:260px;}.ch200{height:200px;}
+
+/* TAB */
+.trow{display:flex;gap:4px;margin-bottom:18px;}
+.tab{
+  padding:5px 13px;border-radius:8px;border:none;
+  background:var(--s2);color:var(--sub);
+  font-size:.73rem;font-weight:600;font-family:var(--fb);cursor:pointer;transition:all .2s;
+}
+.tab.on{background:var(--mag);color:#fff;}
+
+/* LEGEND */
+.leg-row{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;}
+.legitem{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--sub);}
+.legdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* STAT PILLS */
+.spills{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;}
+.spill{
+  background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  padding:13px 16px;flex:1;min-width:90px;text-align:center;
+}
+.spill .sn{font-family:var(--fd);font-size:1.55rem;color:var(--magB);}
+.spill .sl{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:3px;}
+
+/* TOP RETORS */
+.rlist{list-style:none;}
+.ritem{
+  display:grid;grid-template-columns:28px 1fr 80px 42px;
+  align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.ritem:last-child{border-bottom:none;}
+.rnk{
+  width:26px;height:26px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:.68rem;font-weight:700;
+}
+.rk1{background:rgba(245,185,66,.18);color:#F5B942;}
+.rk2{background:rgba(180,192,204,.12);color:#B4C0CC;}
+.rk3{background:rgba(205,127,50,.14);color:#CD7F32;}
+.rk4,.rk5{background:var(--s2);color:var(--sub);}
+.rname{font-size:.83rem;font-weight:600;color:var(--txt);line-height:1.2;}
+.rretos{font-size:.7rem;color:var(--dim);font-family:var(--fm);}
+.rbar-w{display:flex;align-items:center;gap:7px;}
+.rbar{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--mag),var(--magB));min-width:3px;}
+.rint{font-family:var(--fm);font-size:.78rem;color:var(--magB);font-weight:700;text-align:right;}
+
+/* RETOS LIST */
+.retl{list-style:none;}
+.retrow{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 0;border-bottom:1px solid var(--border);
+}
+.retrow:last-child{border-bottom:none;}
+.retsw{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.retname{flex:1;font-size:.79rem;color:var(--txt);font-weight:500;}
+.rettrack{flex:0 0 54px;height:3px;background:var(--s2);border-radius:2px;overflow:hidden;}
+.retfill{height:100%;border-radius:2px;}
+.retn{font-family:var(--fm);font-size:.7rem;color:var(--magB);font-weight:700;min-width:18px;text-align:right;}
+
+footer{
+  margin-top:56px;padding-top:26px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--fm);font-size:.66rem;color:var(--dim);letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+@keyframes fD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes fU{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.25}}
+
+@media(max-width:1000px){
+  .kstrip{grid-template-columns:repeat(3,1fr);}
+  .g3,.g2{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .kstrip{grid-template-columns:repeat(2,1fr);}
+  header{grid-template-columns:1fr;}.hright{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="eyebrow">Banco Guayaquil · Marca Colaboradores</div>
+    <h1>Resultados<br><em>MC — Abril</em></h1>
+  </div>
+  <div class="hright">
+    <div class="hperiod">Período de corte<br>Abril 2025<br>Guayaquil, EC</div>
+    <div class="hlive">Datos Finales</div>
+  </div>
+</header>
+
+<!-- FILTERS -->
+<div class="frow">
+  <span class="flabel">Red Social</span>
+  <button class="chip on"  onclick="setNet('Todos',this)">Todos</button>
+  <button class="chip"     onclick="setNet('LinkedIn',this)">LinkedIn</button>
+  <button class="chip"     onclick="setNet('Instagram',this)">Instagram</button>
+  <button class="chip"     onclick="setNet('TikTok',this)">TikTok</button>
+</div>
+
+<!-- KPI STRIP -->
+<div class="kstrip">
+  <div class="kpi"><span class="kpi-ico">📄</span><div class="kpi-num" id="kc">67</div><div class="kpi-lbl">Contenidos</div><div class="kpi-sub">Post · Story · Video</div></div>
+  <div class="kpi"><span class="kpi-ico">💬</span><div class="kpi-num" id="ki">2,394</div><div class="kpi-lbl">Interacciones</div><div class="kpi-sub">Likes · Cmts · Shares</div></div>
+  <div class="kpi"><span class="kpi-ico">🎬</span><div class="kpi-num" id="km">35</div><div class="kpi-lbl">Total Media</div><div class="kpi-sub">Piezas subidas</div></div>
+  <div class="kpi"><span class="kpi-ico">🏆</span><div class="kpi-num" id="kr">7</div><div class="kpi-lbl">Retos Activos</div><div class="kpi-sub">Categorías</div></div>
+  <div class="kpi"><span class="kpi-ico">👥</span><div class="kpi-num" id="krt">30</div><div class="kpi-lbl">Retors</div><div class="kpi-sub">Participantes únicos</div></div>
+</div>
+
+<!-- SECTION 01 -->
+<div class="slabel" style="animation:fU .7s .2s ease both">01 — Distribución de contenido</div>
+<div class="g g2" style="animation:fU .7s .23s ease both">
+  <div class="card">
+    <div class="chead">
+      <div class="ctitle">Contenido por Tipo</div>
+      <span class="cbadge">Media</span>
+    </div>
+    <div class="trow">
+      <button class="tab on" onclick="swMedia('cnt',this)">Cantidad</button>
+      <button class="tab"    onclick="swMedia('int',this)">Interacciones</button>
+    </div>
+    <div class="ch ch220"><canvas id="cMedia"></canvas></div>
+    <div class="leg-row" id="legMedia"></div>
+  </div>
+  <div class="card">
+    <div class="chead">
+      <div class="ctitle">Puntos por Red Social</div>
+      <span class="cbadge">Pts Subir</span>
+    </div>
+    <div class="ch ch220"><canvas id="cNet"></canvas></div>
+    <div class="spills">
+      <div class="spill"><div class="sn">1,390</div><div class="sl">Pts Subir</div></div>
+      <div class="spill"><div class="sn">1,629</div><div class="sl">Pts Totales</div></div>
+      <div class="spill"><div class="sn">239</div><div class="sl">Pts x Int</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 02 -->
+<div class="slabel" style="animation:fU .7s .28s ease both">02 — Análisis de retos</div>
+<div class="g g3" style="animation:fU .7s .31s ease both">
+  <div class="card">
+    <div class="chead"><div class="ctitle">Interacciones por Reto</div><span class="cbadge">Total 2,394</span></div>
+    <div class="ch ch260"><canvas id="cRetos"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="chead"><div class="ctitle">Top 5 Retors</div><span class="cbadge">Ranking</span></div>
+    <ul class="rlist" id="topR"></ul>
+  </div>
+  <div class="card">
+    <div class="chead"><div class="ctitle">Participación por Reto</div><span class="cbadge">67 total</span></div>
+    <ul class="retl" id="retL"></ul>
+  </div>
+</div>
+
+<!-- SECTION 03 -->
+<div class="slabel" style="animation:fU .7s .36s ease both">03 — Rendimiento individual</div>
+<div class="g g2" style="animation:fU .7s .39s ease both">
+  <div class="card">
+    <div class="chead"><div class="ctitle">Puntos Acreditados — Top 10</div><span class="cbadge">Pts Totales</span></div>
+    <div class="ch ch260"><canvas id="cPuntos"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="chead"><div class="ctitle">Contenidos Subidos — Top 10</div><span class="cbadge">Submissions</span></div>
+    <div class="ch ch260"><canvas id="cSubs"></canvas></div>
+  </div>
+</div>
+
+<footer>
+  <span>MC Dashboard · Abril 2025</span>
+  <span>Banco Guayaquil · Marca Colaboradores</span>
+  <span>67 Contenidos · 30 Retors</span>
+</footer>
+
+</div>
+
+<script>
+/* ── PALETTE ── */
+const P={
+  mag:'#D4006E',magB:'#FF1A8C',gold:'#F5B942',
+  palette:['#D4006E','#FF1A8C','#FF6EC7','#a0005a','#7b0042','#ff80c6','#cc0066','#ff3399','#890038','#ffc2e0'],
+  net:['#D4006E','#0A66C2','#010101','#FF0050'],
+  bg:'#1C1C26',sub:'#8885A0',txt:'#F0EEF5'
+};
+
+/* ── DATA ── */
+const D={
+  mediaCount:{Story:35,Post:24,Video:8},
+  mediaInt:{Post:2232,Video:316,Story:0},
+  networks:{Instagram:850,LinkedIn:480,TikTok:60,LinkdIn:20},
+  retosInt:{'Soy Magenta':944,'Great Place to Work':611,'CodigosPeigo':331,'El banco del año es magenta':303,'Primero Quito':199,'Quito es magenta':6,'Loquesigueconamex':0},
+  retosP:{'Quito es magenta':18,'Soy Magenta':15,'Great Place to Work':14,'CodigosPeigo':11,'Primero Quito':4,'El banco del año es magenta':3,'Loquesigueconamex':2},
+  topRetors:[{n:'Maria G. Campos',int:476,r:6},{n:'Ana Karina Moreno',int:370,r:2},{n:'Kevin Luna',int:282,r:4},{n:'Carlos Alvia',int:260,r:1},{n:'Tais',int:218,r:5}],
+  puntos:{'Maria G. Campos':187.7,'Kevin Luna':124.8,'Ana Karina Moreno':87,'Brian Paz y Miño':86.4,"Valeria D'orazio":80.1,'Gabriela Alvear':80.1,'Tais':65,'Isabela Perez':50.1,'Carlos Alvia':36,'Mikaela Peralta':17.4},
+  subs:{'Maria G. Campos':6,'Tais':5,'Brian Paz y Miño':5,'Kevin Luna':4,'Veronica Gonzalez':4,'Ismael':4,"Valeria D'orazio":3,'Gabriela Alvear':3,'Ana Karina Moreno':2,'Carlos Alvia':1}
+};
+
+/* ── CHART DEFAULTS ── */
+Chart.defaults.color=P.sub;
+Chart.defaults.font.family="'DM Sans',sans-serif";
+
+const TT={backgroundColor:'#1C1C26',borderColor:'rgba(212,0,110,.3)',borderWidth:1,
+  titleFont:{family:'Space Mono',size:10},bodyFont:{family:'DM Sans',size:13},padding:12};
+
+const charts={};
+
+function legend(id,labels,colors,vals){
+  document.getElementById(id).innerHTML=labels.map((l,i)=>
+    `<div class="legitem"><div class="legdot" style="background:${colors[i]}"></div>${l} <b style="color:${colors[i]};margin-left:3px">${vals[i]}</b></div>`).join('');
+}
+
+function animN(el,to,dur=950){
+  let from=parseInt(el.textContent.replace(/[^0-9]/g,'')||0);
+  const s=performance.now();
+  const fmt=v=>Math.round(v).toLocaleString('es-EC');
+  (function step(now){
+    const p=Math.min((now-s)/dur,1),e=1-Math.pow(1-p,3);
+    el.textContent=fmt(from+(to-from)*e);
+    if(p<1)requestAnimationFrame(step);
+  })(s);
+}
+
+/* ── INIT ── */
+function init(){
+  /* Media Doughnut */
+  const mc=document.getElementById('cMedia').getContext('2d');
+  const mclr=['#D4006E','#FF1A8C','#FF6EC7'];
+  charts.media=new Chart(mc,{type:'doughnut',data:{
+    labels:Object.keys(D.mediaCount),
+    datasets:[{data:Object.values(D.mediaCount),backgroundColor:mclr,borderColor:'#13131A',borderWidth:3,hoverOffset:8}]
+  },options:{responsive:true,maintainAspectRatio:false,cutout:'68%',
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.label}: ${c.raw} (${((c.raw/67)*100).toFixed(0)}%)`}}}}});
+  legend('legMedia',Object.keys(D.mediaCount),mclr,Object.values(D.mediaCount));
+
+  /* Network Bar */
+  const nc=document.getElementById('cNet').getContext('2d');
+  charts.net=new Chart(nc,{type:'bar',data:{
+    labels:Object.keys(D.networks),
+    datasets:[{data:Object.values(D.networks),backgroundColor:P.net,borderRadius:10,borderSkipped:false}]
+  },options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.raw} pts`}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:P.sub,font:{size:11}}},
+            y:{grid:{display:false},ticks:{color:P.txt,font:{size:12,weight:'600'}}}}}});
+
+  /* Retos Bar */
+  const rc=document.getElementById('cRetos').getContext('2d');
+  const rl=Object.keys(D.retosInt);
+  charts.retos=new Chart(rc,{type:'bar',data:{
+    labels:rl,
+    datasets:[{data:Object.values(D.retosInt),backgroundColor:rl.map((_,i)=>P.palette[i%P.palette.length]),borderRadius:8,borderSkipped:false}]
+  },options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.raw} interacciones`}}},
+    scales:{x:{grid:{display:false},ticks:{color:P.sub,font:{size:10},maxRotation:28,minRotation:18}},
+            y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:P.sub,font:{size:11}}}}}});
+
+  /* Puntos Horizontal */
+  const pc=document.getElementById('cPuntos').getContext('2d');
+  const sp=Object.entries(D.puntos).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  charts.puntos=new Chart(pc,{type:'bar',data:{
+    labels:sp.map(x=>x[0]),
+    datasets:[{data:sp.map(x=>x[1]),
+      backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(400,0,0,0);g.addColorStop(0,P.magB);g.addColorStop(1,P.mag);return g;},
+      borderRadius:8,borderSkipped:false}]
+  },options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.raw.toFixed(1)} pts`}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:P.sub,font:{size:11}}},
+            y:{grid:{display:false},ticks:{color:P.txt,font:{size:11,weight:'600'}}}}}});
+
+  /* Submissions Bar */
+  const sc=document.getElementById('cSubs').getContext('2d');
+  const ss=Object.entries(D.subs).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  charts.subs=new Chart(sc,{type:'bar',data:{
+    labels:ss.map(x=>x[0]),
+    datasets:[{data:ss.map(x=>x[1]),backgroundColor:ss.map((_,i)=>P.palette[i%P.palette.length]),borderRadius:8,borderSkipped:false}]
+  },options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.raw} contenidos`}}},
+    scales:{x:{grid:{display:false},ticks:{color:P.sub,font:{size:10},maxRotation:25}},
+            y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:P.sub,font:{size:11},stepSize:1}}}}});
+
+  /* Top Retors */
+  const rks=['rk1','rk2','rk3','rk4','rk5'];
+  const mx=Math.max(...D.topRetors.map(x=>x.int));
+  document.getElementById('topR').innerHTML=D.topRetors.map((r,i)=>`
+    <li class="ritem">
+      <div class="rnk ${rks[i]}">${i+1}</div>
+      <div><div class="rname">${r.n}</div><div class="rretos">${r.r} reto${r.r>1?'s':''}</div></div>
+      <div class="rbar-w"><div class="rbar" style="width:${(r.int/mx)*74}px"></div></div>
+      <div class="rint">${r.int}</div>
+    </li>`).join('');
+
+  /* Retos Participation */
+  const tot=Object.values(D.retosP).reduce((a,b)=>a+b,0);
+  const mxr=Math.max(...Object.values(D.retosP));
+  document.getElementById('retL').innerHTML=Object.entries(D.retosP).map(([n,v],i)=>`
+    <li class="retrow">
+      <div class="retsw" style="background:${P.palette[i%P.palette.length]}"></div>
+      <span class="retname">${n}</span>
+      <div class="rettrack"><div class="retfill" style="width:${(v/mxr)*100}%;background:${P.palette[i%P.palette.length]}"></div></div>
+      <span class="retn">${v}</span>
+    </li>`).join('');
+
+  /* Animate KPIs */
+  ['kc','ki','km','kr','krt'].forEach(id=>{
+    const el=document.getElementById(id);
+    const v=parseInt(el.textContent.replace(/\D/g,''));
+    animN(el,v,1100);
+  });
+}
+
+/* ── MEDIA SWITCH ── */
+function swMedia(mode,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const d=mode==='cnt'?D.mediaCount:D.mediaInt;
+  charts.media.data.labels=Object.keys(d);
+  charts.media.data.datasets[0].data=Object.values(d);
+  charts.media.update();
+  legend('legMedia',Object.keys(d),['#D4006E','#FF1A8C','#FF6EC7'],Object.values(d));
+}
+
+/* ── NETWORK FILTER ── */
+const KNET={
+  Todos:    {c:67,i:2394,m:35,r:7,rt:30},
+  LinkedIn: {c:27,i:2134,m:27,r:7,rt:18},
+  Instagram:{c:34,i:43,  m:5, r:6,rt:14},
+  TikTok:   {c:6, i:217, m:6, r:2,rt:6 }
+};
+function setNet(net,btn){
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const k=KNET[net]||KNET.Todos;
+  animN(document.getElementById('kc'),k.c);
+  animN(document.getElementById('ki'),k.i);
+  animN(document.getElementById('km'),k.m);
+  animN(document.getElementById('kr'),k.r);
+  animN(document.getElementById('krt'),k.rt);
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
